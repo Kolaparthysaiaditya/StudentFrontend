@@ -1,0 +1,64 @@
+/* Background and layout */
+.dashboard-container {
+  background-color: #e9ecef;
+  min-height: 100vh;
+}
+
+/* Sidebar styling */
+.sidebar-bg {
+  background-color: #1d3557 !important;
+}
+
+.sidebar {
+  background-color: #1d3557;
+  height: 100vh;
+  color: white;
+  border-right: 1px solid #444;
+}
+
+.sidebar .nav-link {
+  background-color: transparent;
+  color: #cfd8dc;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #457b9d;
+  color: #fff;
+}
+
+.sidebar .nav-link.active {
+  background-color: #457b9d;
+  color: #fff;
+}
+
+/* Logout button */
+.btn-purple {
+  background-color: #6f42c1 !important;
+  color: white !important;
+  border: none;
+}
+
+.btn-purple:hover {
+  background-color: #5a32a3 !important;
+  color: #fff;
+}
+
+/* Cards */
+.stat-card {
+  border-radius: 12px;
+  background-color: #fff;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+
+.card:hover {
+  box-shadow: 0 0px 15px blue !important;
+  transform: translateY(-5px);
+}
