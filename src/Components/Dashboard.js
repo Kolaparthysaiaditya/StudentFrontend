@@ -4,8 +4,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../css/Dashboard.css";
 
 import Students from "./files/Students";
+import Courses from "./files/Courses";
+import Enrollment from "./files/Enrollment";
+import Marks from "./files/Marks";
 
-function Sidebar({ setdisplay, currentSection, sid, Admin }) {
+function Sidebar({ setdisplay, currentSection, sid, Admin, heading, headingSetter }) {
     const nav = useNavigate()
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
 
@@ -21,8 +24,9 @@ function Sidebar({ setdisplay, currentSection, sid, Admin }) {
         if (offcanvas) offcanvas.hide();
     };
 
-    const handleNavClick = (section) => {
+    const handleNavClick = (section, label) => {
         setdisplay(section);
+        headingSetter(label);
         if (isSmallScreen) closeOffcanvas(); // ✅ only close if small screen
     };
 
@@ -55,7 +59,7 @@ function Sidebar({ setdisplay, currentSection, sid, Admin }) {
                 ></button>
             </p>
             <h3 className="text-warning fw-bold text-center mb-3 mt-md-3 mt-lg-5">
-                Dashboard
+                {heading}
             </h3>
             <ul className="nav nav-pills flex-column mb-auto">
                 {navItems.map(({ key, icon, label }) => (
@@ -63,7 +67,7 @@ function Sidebar({ setdisplay, currentSection, sid, Admin }) {
                         <button
                             className={`nav-link w-100 text-start d-flex align-items-center ${currentSection === key ? "active" : "text-light"
                                 }`}
-                            onClick={() => handleNavClick(key)}
+                            onClick={() => handleNavClick(key, label)}
                             // ✅ Conditionally include data-bs-dismiss only for small devices
                             {...(isSmallScreen ? { "data-bs-dismiss": "offcanvas" } : {})}
                         >
@@ -85,10 +89,12 @@ function Sidebar({ setdisplay, currentSection, sid, Admin }) {
 }
 
 function Dashboard() {
+    const [sidebarHeading, setSidebarHeading] = useState("Dashboard")
     const [display, setdisplay] = useState("home");
     const [user, setUser] = useState({})
-    const [allstudents, setallstudents] = useState([])
     const [count, setcount] = useState()
+    const [courses, setCourses] = useState()
+    const [enrollments, setEnrollments] = useState()
     const { sid } = useParams()
 
     useEffect(() => {
@@ -97,8 +103,9 @@ function Dashboard() {
                 const respons = await axios.get(
                     "http://127.0.0.1:8000/api/get-all-students/"
                 )
-                setallstudents(respons.data.students)
                 setcount(respons.data.total_students)
+                setCourses(respons.data.total_courses)
+                setEnrollments(respons.data.total_Enrollments)
             } catch (error) {
                 console.error("Error fetching student:", error.response?.data || error.message);
             }
@@ -133,7 +140,14 @@ function Dashboard() {
             <div className="row g-0">
                 {/* Sidebar for medium & large screens */}
                 <div className="col-md-3 col-lg-2 sidebar-container d-none d-md-block">
-                    <Sidebar setdisplay={setdisplay} currentSection={display} sid={user.Sid} Admin={user.role} />
+                    <Sidebar 
+                        setdisplay={setdisplay} 
+                        currentSection={display} 
+                        sid={user.Sid} 
+                        Admin={user.role} 
+                        heading={sidebarHeading}
+                        headingSetter={setSidebarHeading}
+                    />
                 </div>
 
                 {/* Toggle button + offcanvas sidebar for small screens */}
@@ -155,7 +169,7 @@ function Dashboard() {
                         aria-labelledby="mobileSidebarLabel"
                     >
                         <div className="offcanvas-body p-0">
-                            <Sidebar setdisplay={setdisplay} currentSection={display} />
+                            <Sidebar setdisplay={setdisplay} currentSection={display} headingSetter={setSidebarHeading} />
                         </div>
                     </div>
                 </div>
@@ -168,10 +182,10 @@ function Dashboard() {
 
                             <h2 className="fw-bold mb-4">Dashboard</h2>
 
-                            <div className="col-md-4 mb-4" onClick={() => setdisplay("students")}>
+                            <div className="col-md-4 mb-4" onClick={() => {setdisplay("students"); setSidebarHeading("Students")}}>
                                 <div className="card shadow-sm stat-card" style={{ minHeight: "250%" }}>
                                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                                        <i className="bi bi-people-fill text-b;ue fs-1 text-primary"></i>
+                                        <i className="bi bi-people-fill text-primary" style={{fontSize: "10vh"}}></i>
                                         <h5 className="mt-2">Total Students</h5>
                                         <p className="fs-4 text-secondary fw-bold">{count}</p>
                                     </div>
@@ -181,18 +195,18 @@ function Dashboard() {
                             <div className="col-md-4 mb-4" onClick={() => setdisplay("courses")}>
                                 <div className="card shadow-sm stat-card" style={{ minHeight: "250%" }}>
                                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                                        <i className="bi bi-mortarboard fs-1 text-success"></i>
+                                        <i className="bi bi-mortarboard-fill text-primary" style={{fontSize: "10vh"}}></i>
                                         <h5 className="mt-2">Total Courses</h5>
-                                        <p className="fs-4 fw-bold">10</p>
+                                        <p className="fs-4 fw-bold text-secondary">{courses}</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-4" onClick={() => setdisplay("enrollment")}>
                                 <div className="card shadow-sm stat-card" style={{ minHeight: "250%" }}>
                                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                                        <i className="bi bi-book fs-1 text-info"></i>
+                                        <i className="bi bi-book-fill text-primary" style={{fontSize: "8vh"}}></i>
                                         <h5 className="mt-2">Total Enrollments</h5>
-                                        <p className="fs-4 fw-bold">3</p>
+                                        <p className="fs-4 fw-bold text-secondary">{enrollments}</p>
                                     </div>
                                 </div>
                             </div>
@@ -200,19 +214,19 @@ function Dashboard() {
                     )}
 
                     {display === "students" && (
-                        <Students/>
+                        <Students Admin={user.role}/>
                     )}
 
                     {display === "courses" && (
-                        <h1>courses</h1>
+                        <Courses Admin={user.role}/>
                     )}
 
                     {display === "enrollment" && (
-                        <h1>enrolement</h1>
+                        <Enrollment Admin={user.role}/>
                     )}
 
                     {display === "marks" && (
-                        <h1>marks</h1>
+                        <Marks Admin={user.role}/>
                     )}
 
                     {display === "users" && (
